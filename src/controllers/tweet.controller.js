@@ -33,16 +33,10 @@ const createTweet = asynHandler(async (req, res) => {
     }
 });
 
-
-
-
-
-
-
-
 const getUserTweets = asynHandler(async (req, res) => {
 
     const { userId } = req.params;
+    console.log("userId", userId);
     
     try {
         // Find all tweets where the owner field matches the provided userId
@@ -65,16 +59,77 @@ const getUserTweets = asynHandler(async (req, res) => {
 
 
 
-
-
-
 const updateTweet = asynHandler(async (req, res) => {
     //TODO: update tweet
+
+    const { tweetId } = req.params;
+    const { content } = req.body;
+
+    try {
+        // Check if content is provided
+        if (!content) {
+            throw ApiError(404, "Content is required to update the tweet")        
+        }
+
+        // Find the tweet by ID
+        const tweet = await Tweet.findById(tweetId);
+
+        // Check if the tweet exists
+        if (!tweet) {
+            throw ApiError(404, "tweet not found");        
+        }
+
+        // Check if the logged-in user is the owner of the tweet
+        if (tweet.owner.toString() !== req.user._id.toString()) {
+            throw ApiError(403, "You are not authorized to update this tweet");
+        }
+
+        // Update the tweet's content
+        tweet.content = content;
+        const updatedTweet = await tweet.save();
+
+        return res
+        .status(200)
+        .json( new ApiResponse( 200, updatedTweet, "Tweet updated successfully",));
+
+    } catch (error) {
+        throw new ApiError(500, "No tweets found to update for this user!!")  
+    }
+
+
 })
 
 const deleteTweet = asynHandler(async (req, res) => {
-    //TODO: delete tweet
+    
+    const { tweetId } = req.params;
+
+    try {
+        // Find the tweet by ID
+        const tweet = await Tweet.findById(tweetId);
+
+        // Check if the tweet exists
+        if (!tweet) {
+            throw new ApiError(404, "Tweet not found");
+        }
+
+        // Check if the logged-in user is the owner of the tweet
+        if (tweet.owner.toString() !== req.user._id.toString()) {
+            throw new ApiError(403, "You are not authorized to delete this tweet");        
+        }
+
+        // Delete the tweet
+        await tweet.deleteOne();
+
+        return res
+        .status(200)
+        .json( new ApiResponse( 200, {}, "Tweet deleted successfully",));
+
+    } catch (error) {
+        throw new ApiError(500, "An error occurred while deleting the tweet")
+    }
+
 })
+
 
 export {
     createTweet,
@@ -82,149 +137,3 @@ export {
     updateTweet,
     deleteTweet
 }
-
-
-
-/*  
-
-
-
-
-const asyncHandler = require("express-async-handler");
-const Tweet = require("../models/Tweet");
-
-// Controller to get all tweets of a specific user
-const getUserTweets = asyncHandler(async (req, res) => {
-    const { userId } = req.params;
-
-    try {
-        // Find all tweets where the owner field matches the provided userId
-        const tweets = await Tweet.find({ owner: userId }).sort({ createdAt: -1 });
-
-        if (!tweets || tweets.length === 0) {
-            return res.status(404).json({ message: "No tweets found for this user." });
-        }
-
-        res.status(200).json({
-            message: "User tweets retrieved successfully",
-            tweets,
-        });
-    } catch (error) {
-        res.status(500).json({
-            message: "An error occurred while retrieving the user's tweets",
-            error: error.message,
-        });
-    }
-});
-
-module.exports = {
-    getUserTweets,
-};
-
-
-
-
-
-
-const asyncHandler = require("express-async-handler");
-const Tweet = require("../models/Tweet");
-
-// Controller to update a tweet
-const updateTweet = asyncHandler(async (req, res) => {
-    const { tweetId } = req.params;
-    const { content } = req.body;
-
-    try {
-        // Check if content is provided
-        if (!content) {
-            return res.status(400).json({ message: "Content is required to update the tweet." });
-        }
-
-        // Find the tweet by ID
-        const tweet = await Tweet.findById(tweetId);
-
-        // Check if the tweet exists
-        if (!tweet) {
-            return res.status(404).json({ message: "Tweet not found." });
-        }
-
-        // Check if the logged-in user is the owner of the tweet
-        if (tweet.owner.toString() !== req.user._id.toString()) {
-            return res.status(403).json({ message: "You are not authorized to update this tweet." });
-        }
-
-        // Update the tweet's content
-        tweet.content = content;
-        const updatedTweet = await tweet.save();
-
-        res.status(200).json({
-            message: "Tweet updated successfully",
-            updatedTweet,
-        });
-    } catch (error) {
-        res.status(500).json({
-            message: "An error occurred while updating the tweet",
-            error: error.message,
-        });
-    }
-});
-
-module.exports = {
-    updateTweet,
-};
-
-
-
-
-
-
-const asyncHandler = require("express-async-handler");
-const Tweet = require("../models/Tweet");
-
-// Controller to delete a tweet
-const deleteTweet = asyncHandler(async (req, res) => {
-    const { tweetId } = req.params;
-
-    try {
-        // Find the tweet by ID
-        const tweet = await Tweet.findById(tweetId);
-
-        // Check if the tweet exists
-        if (!tweet) {
-            return res.status(404).json({ message: "Tweet not found." });
-        }
-
-        // Check if the logged-in user is the owner of the tweet
-        if (tweet.owner.toString() !== req.user._id.toString()) {
-            return res.status(403).json({ message: "You are not authorized to delete this tweet." });
-        }
-
-        // Delete the tweet
-        await tweet.deleteOne();
-
-        res.status(200).json({
-            message: "Tweet deleted successfully",
-        });
-    } catch (error) {
-        res.status(500).json({
-            message: "An error occurred while deleting the tweet",
-            error: error.message,
-        });
-    }
-});
-
-module.exports = {
-    deleteTweet,
-};
-
-
-
-
-
-
-
-
-
-
-
-*/
