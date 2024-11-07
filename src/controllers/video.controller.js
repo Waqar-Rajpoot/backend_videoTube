@@ -8,54 +8,6 @@ import {uploadOnCloudinary} from "../utils/cloudinary.uploadFile.js"
 
 
 const getAllVideos = asynHandler(async (req, res) => {
-    const { page = 1, limit = 10, query, sortBy, sortType, userId } = req.query
-    //TODO: get all videos based on query, sort, pagination
-})
-
-const publishAVideo = asynHandler(async (req, res) => {
-    const { title, description} = req.body
-    // TODO: get video, upload to cloudinary, create video
-})
-
-const getVideoById = asynHandler(async (req, res) => {
-    const { videoId } = req.params
-    //TODO: get video by id
-})
-
-const updateVideo = asynHandler(async (req, res) => {
-    const { videoId } = req.params
-    //TODO: update video details like title, description, thumbnail
-
-})
-
-const deleteVideo = asynHandler(async (req, res) => {
-    const { videoId } = req.params
-    //TODO: delete video
-})
-
-const togglePublishStatus = asynHandler(async (req, res) => {
-    const { videoId } = req.params
-})
-
-export {
-    getAllVideos,
-    publishAVideo,
-    getVideoById,
-    updateVideo,
-    deleteVideo,
-    togglePublishStatus
-}
-
-
-
-/*
-
-
-const asyncHandler = require("express-async-handler");
-const Video = require("../models/Video");
-
-// Controller to get all videos
-const getAllVideos = asyncHandler(async (req, res) => {
     try {
         const { page = 1, limit = 10, query, sortBy = 'createdAt', sortType = 'desc', userId } = req.query;
 
@@ -103,23 +55,11 @@ const getAllVideos = asyncHandler(async (req, res) => {
             error: error.message,
         });
     }
-});
-
-module.exports = {
-    getAllVideos,
-};
+})
 
 
+const publishAVideo = asynHandler(async (req, res) => {
 
-
-
-
-const asyncHandler = require("express-async-handler");
-const Video = require("../models/Video");
-const cloudinary = require("cloudinary").v2; // Make sure to configure Cloudinary
-
-// Controller to publish a video
-const publishAVideo = asyncHandler(async (req, res) => {
     const { title, description } = req.body;
 
     try {
@@ -167,23 +107,11 @@ const publishAVideo = asyncHandler(async (req, res) => {
             error: error.message,
         });
     }
-});
 
-module.exports = {
-    publishAVideo,
-};
+})
 
-
-
-
-
-
-const asyncHandler = require("express-async-handler");
-const Video = require("../models/Video");
-
-// Controller to get video by ID
-const getVideoById = asyncHandler(async (req, res) => {
-    const { videoId } = req.params;
+const getVideoById = asynHandler(async (req, res) => {
+    const { videoId } = req.params
 
     try {
         // Find the video by its ID
@@ -205,24 +133,11 @@ const getVideoById = asyncHandler(async (req, res) => {
             error: error.message,
         });
     }
-});
 
-module.exports = {
-    getVideoById,
-};
+})
 
-
-
-
-
-
-const asyncHandler = require("express-async-handler");
-const Video = require("../models/Video");
-const cloudinary = require("cloudinary").v2; // Ensure Cloudinary is configured
-
-// Controller to update video details
-const updateVideo = asyncHandler(async (req, res) => {
-    const { videoId } = req.params;
+const updateVideo = asynHandler(async (req, res) => {
+    const { videoId } = req.params
     const { title, description } = req.body;
 
     try {
@@ -263,24 +178,11 @@ const updateVideo = asyncHandler(async (req, res) => {
             error: error.message,
         });
     }
-});
 
-module.exports = {
-    updateVideo,
-};
+})
 
+const deleteVideo = asynHandler(async (req, res) => {
 
-
-
-
-
-
-const asyncHandler = require("express-async-handler");
-const Video = require("../models/Video");
-const cloudinary = require("cloudinary").v2; // Ensure Cloudinary is configured
-
-// Controller to delete a video
-const deleteVideo = asyncHandler(async (req, res) => {
     const { videoId } = req.params;
 
     try {
@@ -310,22 +212,11 @@ const deleteVideo = asyncHandler(async (req, res) => {
             error: error.message,
         });
     }
-});
 
-module.exports = {
-    deleteVideo,
-};
+})
 
-
-
-
-
-const asyncHandler = require("express-async-handler");
-const Video = require("../models/Video");
-
-// Controller to toggle the publish status of a video
-const togglePublishStatus = asyncHandler(async (req, res) => {
-    const { videoId } = req.params;
+const togglePublishStatus = asynHandler(async (req, res) => {
+    const { videoId } = req.params
 
     try {
         // Find the video by ID
@@ -352,70 +243,13 @@ const togglePublishStatus = asyncHandler(async (req, res) => {
             error: error.message,
         });
     }
-});
+})
 
-module.exports = {
-    togglePublishStatus,
-};
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-import asyncHandler from "express-async-handler";
-import { Video } from "../models/Video.js"; // Assuming the file is Video.js
-
-// Controller to create a new video
-const createVideo = asyncHandler(async (req, res) => {
-    try {
-        const { videoFile, thumbnail, title, description, duration, isPublished } = req.body;
-        const owner = req.user._id; // Assuming user info is stored in req.user by authentication middleware
-
-        // Check for required fields
-        if (!videoFile || !thumbnail || !title || !description || !duration) {
-            return res.status(400).json({ message: "All required fields must be provided." });
-        }
-
-        // Create the new video document
-        const video = new Video({
-            videoFile,
-            thumbnail,
-            title,
-            description,
-            duration,
-            isPublished: isPublished ?? true, // Default to true if isPublished is not provided
-            owner,
-        });
-
-        // Save the video to the database
-        await video.save();
-
-        res.status(201).json({
-            message: "Video created successfully",
-            video,
-        });
-    } catch (error) {
-        res.status(500).json({
-            message: "An error occurred while creating the video",
-            error: error.message,
-        });
-    }
-});
-
-export { createVideo };
-
-
-*/
+export {
+    getAllVideos,
+    publishAVideo,
+    getVideoById,
+    updateVideo,
+    deleteVideo,
+    togglePublishStatus
+}

@@ -6,39 +6,7 @@ import {asynHandler} from "../utils/asynHandler.js"
 
 const toggleVideoLike = asynHandler(async (req, res) => {
     const {videoId} = req.params
-    // TODO: toggle like on video
-})
 
-const toggleCommentLike = asynHandler(async (req, res) => {
-    const {commentId} = req.params
-    //TODO: toggle like on comment
-
-})
-
-const toggleTweetLike = asynHandler(async (req, res) => {
-    const {tweetId} = req.params
-    //TODO: toggle like on tweet
-})
-
-const getLikedVideos = asynHandler(async (req, res) => {
-    //TODO: get all liked videos
-})
-
-export {
-    toggleCommentLike,
-    toggleTweetLike,
-    toggleVideoLike,
-    getLikedVideos
-}
-
-
-/*  
-
-import { Like } from "../models/likeModel.js"; // Adjust the path as necessary
-import asyncHandler from "express-async-handler"; // Assuming asyncHandler is being used for error handling
-
-const toggleVideoLike = asyncHandler(async (req, res) => {
-    const { videoId } = req.params; // Get videoId from request parameters
     const likedBy = req.user.id; // Assuming you have user authentication in place
 
     try {
@@ -58,21 +26,11 @@ const toggleVideoLike = asyncHandler(async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: "Failed to toggle like on the video.", error });
     }
-});
+    
+})
 
-export default toggleVideoLike;
+const toggleCommentLike = asynHandler(async (req, res) => {
 
-
-
-
-
-
-
-
-import { Like } from "../models/likeModel.js"; // Adjust the path as necessary
-import asyncHandler from "express-async-handler"; // Assuming asyncHandler is being used for error handling
-
-const toggleCommentLike = asyncHandler(async (req, res) => {
     const { commentId } = req.params; // Get commentId from request parameters
     const likedBy = req.user.id; // Assuming you have user authentication in place
 
@@ -93,20 +51,10 @@ const toggleCommentLike = asyncHandler(async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: "Failed to toggle like on the comment.", error });
     }
-});
+})
 
-export default toggleCommentLike;
+const toggleTweetLike = asynHandler(async (req, res) => {
 
-
-
-
-
-
-
-import { Like } from "../models/likeModel.js"; // Adjust the path as necessary
-import asyncHandler from "express-async-handler"; // Assuming asyncHandler is being used for error handling
-
-const toggleTweetLike = asyncHandler(async (req, res) => {
     const { tweetId } = req.params; // Get tweetId from request parameters
     const likedBy = req.user.id; // Assuming you have user authentication in place
 
@@ -127,19 +75,13 @@ const toggleTweetLike = asyncHandler(async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: "Failed to toggle like on the tweet.", error });
     }
-});
 
-export default toggleTweetLike;
-
+})
 
 
+const getLikedVideos = asynHandler(async (req, res) => {
+    //TODO: get all liked videos
 
-
-import { Like } from "../models/likeModel.js"; // Adjust the path as necessary
-import asyncHandler from "express-async-handler"; // Assuming asyncHandler is being used for error handling
-import { Video } from "../models/videoModel.js"; // Adjust the path as necessary
-
-const getLikedVideos = asyncHandler(async (req, res) => {
     const likedBy = req.user.id; // Assuming you have user authentication in place
 
     try {
@@ -159,10 +101,12 @@ const getLikedVideos = asyncHandler(async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: "Failed to retrieve liked videos.", error });
     }
-});
 
-export default getLikedVideos;
+})
 
-
-
-*/
+export {
+    toggleCommentLike,
+    toggleTweetLike,
+    toggleVideoLike,
+    getLikedVideos
+}

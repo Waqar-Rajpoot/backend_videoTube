@@ -7,29 +7,6 @@ import {ApiResponse} from "../utils/ApiResponse.js"
 import {asynHandler} from "../utils/asynHandler.js"
 
 const getChannelStats = asynHandler(async (req, res) => {
-    // TODO: Get the channel stats like total video views, total subscribers, total videos, total likes etc.
-})
-
-const getChannelVideos = asynHandler(async (req, res) => {
-    // TODO: Get all the videos uploaded by the channel
-})
-
-export {
-    getChannelStats, 
-    getChannelVideos
-}
-
-
-
-
-/*  
-
-import { Video } from "../models/videoModel.js"; // Adjust the path as necessary
-import { Subscription } from "../models/subscriptionModel.js"; // Adjust the path as necessary
-import { Like } from "../models/likeModel.js"; // Adjust the path as necessary
-import asyncHandler from "express-async-handler";
-
-const getChannelStats = asyncHandler(async (req, res) => {
     const { channelId } = req.params; // Get the channel ID from the request parameters
 
     try {
@@ -61,21 +38,11 @@ const getChannelStats = asyncHandler(async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: "Failed to retrieve channel stats.", error });
     }
-});
 
-export default getChannelStats;
+})
 
+const getChannelVideos = asynHandler(async (req, res) => {
 
-
-
-
-
-
-
-import { Video } from "../models/videoModel.js"; // Adjust the path as necessary
-import asyncHandler from "express-async-handler";
-
-const getChannelVideos = asyncHandler(async (req, res) => {
     const { channelId } = req.params; // Get the channel ID from the request parameters
     const { page = 1, limit = 10 } = req.query; // Get pagination parameters from the query string
 
@@ -104,9 +71,10 @@ const getChannelVideos = asyncHandler(async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: "Failed to retrieve channel videos.", error });
     }
-});
 
-export default getChannelVideos;
+})
 
-
-*/
+export {
+    getChannelStats, 
+    getChannelVideos
+}

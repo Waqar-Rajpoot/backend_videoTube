@@ -3,68 +3,13 @@ import {Playlist} from "../models/playlist.model.js"
 import {ApiError} from "../utils/ApiError.js"
 import {ApiResponse} from "../utils/ApiResponse.js"
 import {asynHandler} from "../utils/asynHandler.js"
+import { Video } from "../models/video.model.js"
+import { User } from "../models/user.model.js"
 
 
 const createPlaylist = asynHandler(async (req, res) => {
-    const {name, description} = req.body
+    // const {name, description} = req.body
 
-    //TODO: create playlist
-})
-
-const getUserPlaylists = asynHandler(async (req, res) => {
-    const {userId} = req.params
-    //TODO: get user playlists
-})
-
-const getPlaylistById = asynHandler(async (req, res) => {
-    const {playlistId} = req.params
-    //TODO: get playlist by id
-})
-
-const addVideoToPlaylist = asynHandler(async (req, res) => {
-    const {playlistId, videoId} = req.params
-})
-
-const removeVideoFromPlaylist = asynHandler(async (req, res) => {
-    const {playlistId, videoId} = req.params
-    // TODO: remove video from playlist
-
-})
-
-const deletePlaylist = asynHandler(async (req, res) => {
-    const {playlistId} = req.params
-    // TODO: delete playlist
-})
-
-const updatePlaylist = asynHandler(async (req, res) => {
-    const {playlistId} = req.params
-    const {name, description} = req.body
-    //TODO: update playlist
-})
-
-export {
-    createPlaylist,
-    getUserPlaylists,
-    getPlaylistById,
-    addVideoToPlaylist,
-    removeVideoFromPlaylist,
-    deletePlaylist,
-    updatePlaylist
-}
-
-
-
-
-
-
-/*
-
-const Playlist = require("../models/Playlist");
-const Video = require("../models/Video");
-const User = require("../models/User");
-
-// Controller for creating a playlist
-exports.createPlaylist = async (req, res) => {
     try {
         const { name, description, videos } = req.body;
         
@@ -97,24 +42,11 @@ exports.createPlaylist = async (req, res) => {
         console.error("Error creating playlist:", error);
         res.status(500).json({ message: "Server error. Please try again." });
     }
-};
 
+})
 
+const getUserPlaylists = asynHandler(async (req, res) => {
 
-
-
-
-
-
-
-
- Controller for getting all playlists for a user
-
-const asyncHandler = require("express-async-handler");
-const Playlist = require("../models/Playlist");
-
-// Controller to get all playlists of a specific user
-const getUserPlaylists = asyncHandler(async (req, res) => {
     try {
         const { userId } = req.params;
 
@@ -135,24 +67,13 @@ const getUserPlaylists = asyncHandler(async (req, res) => {
             error: error.message,
         });
     }
-});
 
-module.exports = {
-    getUserPlaylists,
-};
+})
 
+const getPlaylistById = asynHandler(async (req, res) => {
+    const { playlistId } = req.params;
 
-
-
-
-
-const asyncHandler = require("express-async-handler");
-const Playlist = require("../models/Playlist");
-
-// Controller to get a specific playlist by its ID
-const getPlaylistById = asyncHandler(async (req, res) => {
     try {
-        const { playlistId } = req.params;
 
         // Find the playlist by its ID and populate the videos field
         const playlist = await Playlist.findById(playlistId).populate("videos");
@@ -171,26 +92,13 @@ const getPlaylistById = asyncHandler(async (req, res) => {
             error: error.message,
         });
     }
-});
 
-module.exports = {
-    getPlaylistById,
-};
+})
 
+const addVideoToPlaylist = asynHandler(async (req, res) => {
+    const {playlistId, videoId} = req.params
 
-
-
-
-
-const asyncHandler = require("express-async-handler");
-const Playlist = require("../models/Playlist");
-const Video = require("../models/Video");
-
-// Controller to add a video to a playlist
-const addVideoToPlaylist = asyncHandler(async (req, res) => {
     try {
-        const { playlistId, videoId } = req.params;
-
         // Check if the playlist exists
         const playlist = await Playlist.findById(playlistId);
         if (!playlist) {
@@ -222,24 +130,12 @@ const addVideoToPlaylist = asyncHandler(async (req, res) => {
             error: error.message,
         });
     }
-});
 
-module.exports = {
-    addVideoToPlaylist,
-};
+})
 
+const removeVideoFromPlaylist = asynHandler(async (req, res) => {
+    const {playlistId, videoId} = req.params
 
-
-
-
-
-
-
-const asyncHandler = require("express-async-handler");
-const Playlist = require("../models/Playlist");
-
-// Controller to remove a video from a playlist
-const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
     try {
         const { playlistId, videoId } = req.params;
 
@@ -269,26 +165,13 @@ const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
             error: error.message,
         });
     }
-});
 
-module.exports = {
-    removeVideoFromPlaylist,
-};
+})
 
+const deletePlaylist = asynHandler(async (req, res) => {
+    const {playlistId} = req.params
 
-
-
-
-
-
-const asyncHandler = require("express-async-handler");
-const Playlist = require("../models/Playlist");
-
-// Controller to delete a playlist
-const deletePlaylist = asyncHandler(async (req, res) => {
     try {
-        const { playlistId } = req.params;
-
         // Check if the playlist exists
         const playlist = await Playlist.findById(playlistId);
         if (!playlist) {
@@ -307,25 +190,15 @@ const deletePlaylist = asyncHandler(async (req, res) => {
             error: error.message,
         });
     }
-});
 
-module.exports = {
-    deletePlaylist,
-};
+})
 
+const updatePlaylist = asynHandler(async (req, res) => {
+    const {playlistId} = req.params
+    const {name, description} = req.body
+    //TODO: update playlist
 
-
-
-
-const asyncHandler = require("express-async-handler");
-const Playlist = require("../models/Playlist");
-
-// Controller to update a playlist
-const updatePlaylist = asyncHandler(async (req, res) => {
     try {
-        const { playlistId } = req.params;
-        const { name, description } = req.body;
-
         // Check if the playlist exists
         const playlist = await Playlist.findById(playlistId);
         if (!playlist) {
@@ -349,11 +222,15 @@ const updatePlaylist = asyncHandler(async (req, res) => {
             error: error.message,
         });
     }
-});
 
-module.exports = {
-    updatePlaylist,
-};
+})
 
-
-*/
+export {
+    createPlaylist,
+    getUserPlaylists,
+    getPlaylistById,
+    addVideoToPlaylist,
+    removeVideoFromPlaylist,
+    deletePlaylist,
+    updatePlaylist
+}

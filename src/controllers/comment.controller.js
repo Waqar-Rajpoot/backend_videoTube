@@ -5,42 +5,8 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { asynHandler } from "../utils/asynHandler.js";
 
 const getVideoComments = asynHandler(async (req, res) => {
-  //TODO: get all comments for a video
-  const { videoId } = req.params;
-  const { page = 1, limit = 10 } = req.query;
-});
 
-const addComment = asynHandler(async (req, res) => {
-  // TODO: add a comment to a video
-});
-
-const updateComment = asynHandler(async (req, res) => {
-  // TODO: update a comment
-});
-
-const deleteComment = asynHandler(async (req, res) => {
-  // TODO: delete a comment
-});
-
-export { getVideoComments,
-    addComment, 
-    updateComment, 
-    deleteComment
-};
-
-
-
-/*
-
-
-
-
-
-import { Comment } from "../models/commentModel.js"; // Adjust the path as necessary
-import asyncHandler from "express-async-handler";
-
-const getVideoComments = asyncHandler(async (req, res) => {
-    const { videoId } = req.params; // Get the videoId from request parameters
+  const { videoId } = req.params; // Get the videoId from request parameters
     const { page = 1, limit = 10 } = req.query; // Get pagination parameters from query
 
     try {
@@ -94,59 +60,40 @@ const getVideoComments = asyncHandler(async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: "Failed to retrieve comments.", error });
     }
+
 });
 
-export default getVideoComments;
+const addComment = asynHandler(async (req, res) => {
+  const { content, videoId } = req.body; // Get content and videoId from request body
+  const owner = req.user.id; // Assuming user is authenticated
 
+  // Validate input
+  if (!content || !videoId) {
+      return res.status(400).json({ message: "Content and video ID are required." });
+  }
 
+  try {
+      // Create a new comment instance
+      const newComment = new Comment({
+          content,
+          video: videoId,
+          owner,
+      });
 
+      // Save the new comment to the database
+      await newComment.save();
 
+      // Respond with the newly created comment
+      res.status(201).json({ message: "Comment added successfully!", comment: newComment });
+  } catch (error) {
+      res.status(500).json({ message: "Failed to add comment.", error });
+  }
 
-
-
-import { Comment } from "../models/commentModel.js"; // Adjust the path as necessary
-import asyncHandler from "express-async-handler";
-
-const addComment = asyncHandler(async (req, res) => {
-    const { content, videoId } = req.body; // Get content and videoId from request body
-    const owner = req.user.id; // Assuming user is authenticated
-
-    // Validate input
-    if (!content || !videoId) {
-        return res.status(400).json({ message: "Content and video ID are required." });
-    }
-
-    try {
-        // Create a new comment instance
-        const newComment = new Comment({
-            content,
-            video: videoId,
-            owner,
-        });
-
-        // Save the new comment to the database
-        await newComment.save();
-
-        // Respond with the newly created comment
-        res.status(201).json({ message: "Comment added successfully!", comment: newComment });
-    } catch (error) {
-        res.status(500).json({ message: "Failed to add comment.", error });
-    }
 });
 
-export default addComment;
+const updateComment = asynHandler(async (req, res) => {
 
-
-
-
-
-
-
-import { Comment } from "../models/commentModel.js"; // Adjust the path as necessary
-import asyncHandler from "express-async-handler";
-
-const updateComment = asyncHandler(async (req, res) => {
-    const { commentId } = req.params; // Get the comment ID from the request parameters
+  const { commentId } = req.params; // Get the comment ID from the request parameters
     const { content } = req.body; // Get the updated content from the request body
     const owner = req.user.id; // Get the authenticated user's ID
 
@@ -178,53 +125,40 @@ const updateComment = asyncHandler(async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: "Failed to update comment.", error });
     }
+
 });
 
-export default updateComment;
+const deleteComment = asynHandler(async (req, res) => {
+  const { commentId } = req.params; // Get the comment ID from the request parameters
+  const owner = req.user.id; // Get the authenticated user's ID
 
+  try {
+      // Find the comment by ID
+      const comment = await Comment.findById(commentId);
 
+      // Check if the comment exists
+      if (!comment) {
+          return res.status(404).json({ message: "Comment not found." });
+      }
 
+      // Check if the authenticated user is the owner of the comment
+      if (comment.owner.toString() !== owner) {
+          return res.status(403).json({ message: "You are not authorized to delete this comment." });
+      }
 
+      // Delete the comment
+      await comment.remove();
 
+      // Respond with a success message
+      res.status(200).json({ message: "Comment deleted successfully!" });
+  } catch (error) {
+      res.status(500).json({ message: "Failed to delete comment.", error });
+  }
 
-
-
-import { Comment } from "../models/commentModel.js"; // Adjust the path as necessary
-import asyncHandler from "express-async-handler";
-
-const deleteComment = asyncHandler(async (req, res) => {
-    const { commentId } = req.params; // Get the comment ID from the request parameters
-    const owner = req.user.id; // Get the authenticated user's ID
-
-    try {
-        // Find the comment by ID
-        const comment = await Comment.findById(commentId);
-
-        // Check if the comment exists
-        if (!comment) {
-            return res.status(404).json({ message: "Comment not found." });
-        }
-
-        // Check if the authenticated user is the owner of the comment
-        if (comment.owner.toString() !== owner) {
-            return res.status(403).json({ message: "You are not authorized to delete this comment." });
-        }
-
-        // Delete the comment
-        await comment.remove();
-
-        // Respond with a success message
-        res.status(200).json({ message: "Comment deleted successfully!" });
-    } catch (error) {
-        res.status(500).json({ message: "Failed to delete comment.", error });
-    }
 });
 
-export default deleteComment;
-
-
-
-
-
-
-*/
+export { getVideoComments,
+    addComment, 
+    updateComment, 
+    deleteComment
+};
