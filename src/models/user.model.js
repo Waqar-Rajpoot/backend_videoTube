@@ -10,7 +10,7 @@ const userSchema = new Schema(
       unique: true,
       lowercase: true,
       trim: true,
-      index: true,
+      // index: true,
       minlength: [3, "Username should be more than 3 characters"]
     },
     email: {
@@ -25,7 +25,7 @@ const userSchema = new Schema(
       required: true,
       lowercase: true,
       trim: true,
-      index: true,
+      // index: true,
     },
     avatar: {
       type: String, // cloudinary url

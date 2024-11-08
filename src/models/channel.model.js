@@ -5,11 +5,10 @@ const channelSchema = new Schema(
   {
     username:{
         type: String,
-        // required: true,
+        required: true,
         unique: true,
         lowercase: true,
         trim: true,
-        index: true,
         minlength: [3, "Username should be more than 3 characters"]
     },
     name: {
@@ -29,7 +28,7 @@ const channelSchema = new Schema(
     },
     avatar: {
       type: String, // URL for channel's avatar image
-      required: true,
+      // required: true,
     },
     coverImage: {
       type: String, // URL for channel's cover image

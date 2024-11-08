@@ -27,7 +27,7 @@ router.route("/:channelId")
     .put(updateChannel)
     .delete(deleteChannel);
 
-router.route("/:channelId/stats").get(getChannelStats);
+router.route("/stats/:channelId").get(getChannelStats);
 router.route("/search").get(searchChannels);
 
 export default router;
