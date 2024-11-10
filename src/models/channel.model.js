@@ -11,6 +11,11 @@ const channelSchema = new Schema(
         trim: true,
         minlength: [3, "Username should be more than 3 characters"]
     },
+    email: {
+      type: String,
+      unique: true,
+      // required: true,
+    },
     name: {
       type: String,
       required: true,

@@ -7,33 +7,29 @@ import { uploadOnCloudinary } from "../utils/cloudinary.uploadFile.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asynHandler } from "../utils/asynHandler.js";
-import chalk from "chalk"
+import chalk from "chalk";
 
 // 1. Create a New Channel
 const createChannel = asynHandler(async (req, res) => {
   const {
     username,
     name,
+    email,
     description,
     owner,
     tags,
-    // socialLinks,
+    socialLinks,
     privacy,
-  } = req.body;  
-
-  console.log(username, name, description, owner, tags);
-  
+  } = req.body;
 
   try {
-
-     // Check user already exist
+    // Check user already exist
     const existedUser = await Channel.findOne({ username });
-    console.log(existedUser); 
+    console.log(existedUser);
 
     if (existedUser) {
       throw new ApiError(409, "Username already exist...");
     }
-
 
     // Validation check
     if (!(name && owner)) {
@@ -42,78 +38,53 @@ const createChannel = asynHandler(async (req, res) => {
 
     const avatarLocalPath = req.files?.avatar[0]?.path;
 
-  if (!avatarLocalPath) {
-    throw new ApiError(404, "Avatar is required!!");
-  }
+    if (!avatarLocalPath) {
+      throw new ApiError(404, "Avatar is required!!");
+    }
 
-  let coverImageLocalpath;
-  if (
-    req.files &&
-    Array.isArray(req.files.coverImage) &&
-    req.files.coverImage.length > 0
-  ) {
-    coverImageLocalpath = req.files.coverImage[0].path;
-  }
+    let coverImageLocalpath;
+    if (
+      req.files &&
+      Array.isArray(req.files.coverImage) &&
+      req.files.coverImage.length > 0
+    ) {
+      coverImageLocalpath = req.files.coverImage[0].path;
+    }
 
-  
-  
-  
-  const avatar = await uploadOnCloudinary(avatarLocalPath);
-  const coverImage = await uploadOnCloudinary(coverImageLocalpath);
-  
-  console.log("coverImage" + coverImage);
-  console.log( "Avatar" + avatar);
-  if (!avatar) {
-    throw new ApiError(404, "Avatar is required!!!");
-  }
+    const avatar = await uploadOnCloudinary(avatarLocalPath);
+    const coverImage = await uploadOnCloudinary(coverImageLocalpath);
 
-  // const channel = await Channel.create({
-
-  //   username,
-  //     name,
-  //     description,
-  //     owner,
-  //     avatar: avatar.url,
-  //     coverImage: coverImage?.url || "",
-  //     tags,
-  //     socialLinks,
-  //     privacy,
-
-  // });
-
+    if (!avatar) {
+      throw new ApiError(404, "Avatar is required!!!");
+    }
 
     const channel = new Channel({
       username,
+      email,
       name,
       description,
       owner,
       avatar: avatar.url,
       coverImage: coverImage?.url || "",
       tags,
-      // socialLinks,
+      socialLinks,
       privacy,
     });
 
-    console.log(channel);
-    
-
     await channel.save();
-    
+
     return res
       .status(200)
       .json(new ApiResponse(201, channel, "Channel created successfully"));
   } catch (error) {
-    console.log( "Error is!!! " + error.message);
-    
-    throw new ApiError(500, "An error occurred while creating the channel.");
-
+    // console.log( "Error is!!! " + error.message);
+    throw new ApiError(500, "An error occurred while creating the channel!!!");
   }
 });
 
-// 6. Search Channels by Name or Tags
+// 2. Search Channels by Name or Tags
 const searchChannels = asynHandler(async (req, res) => {
-  const { query = '' } = req.query  ?? ''; // Default query to an empty string if undefined
-  console.log("Query for  test!!!" + query);
+  const { query = "" } = req.query ?? ""; // Default query to an empty string if undefined
 
   // Validate input
   if (!query.trim()) {
@@ -129,33 +100,34 @@ const searchChannels = asynHandler(async (req, res) => {
       ],
     });
 
-    // console.log(channels);
-    
-
     // Check if any channels were found
     if (!channels.length) {
-      throw new ApiError(404, "No channels found matching your search criteria");
+      throw new ApiError(
+        404,
+        "No channels found matching your search criteria"
+      );
     }
 
     // Send the response
-    return res.status(200).json(new ApiResponse(200, channels, "Channels retrieved successfully"));
+    return res
+      .status(200)
+      .json(new ApiResponse(200, channels, "Channels retrieved successfully"));
   } catch (error) {
     console.log("Error!!!" + error.message); // Log the error for debugging
     throw new ApiError(500, "An error occurred while searching for channels.");
   }
 });
 
-
-// 2. Get Channel Details by ID
+// 3. Get Channel Details by ID
 const getChannelById = asynHandler(async (req, res) => {
   const { channelId } = req.params;
 
   try {
     // Find the channel by ID and populate related fields (e.g., owner details)
-    const channel = await Channel.findById(channelId)
-      // .populate("owner", "username avatar") // Customize fields to populate from the owner
-      // .populate("subscribers", "username email") // Populate subscriber details if required
-      // .exec();
+    const channel = await Channel.findById(channelId);
+    // .populate("owner", "username avatar") // Customize fields to populate from the owner
+    // .populate("subscribers", "username email") // Populate subscriber details if required
+    // .exec();
 
     // Check if the channel exists
     if (!channel) {
@@ -171,56 +143,71 @@ const getChannelById = asynHandler(async (req, res) => {
   }
 });
 
-// 3. Update Channel Information
+// 4. Update Channel Information
 const updateChannel = asynHandler(async (req, res) => {
   const { channelId } = req.params;
   const updates = req.body;
 
   try {
-      // Define fields that are allowed to be updated
-      const allowedUpdates = new Set(["name", "description", "tags", "socialLinks", "privacy", "avatar", "coverImage"]);
-      
-      // Filter the updates to keep only allowed fields
-      const filteredUpdates = Object.keys(updates).reduce((acc, key) => {
-          if (allowedUpdates.has(key)) {
-              acc[key] = updates[key];
-          }
-          return acc;
-      }, {});
+    // Define fields that are allowed to be updated
+    const allowedUpdates = new Set([
+      "name",
+      "description",
+      "tags",
+      "socialLinks",
+      "privacy",
+      "avatar",
+      "coverImage",
+    ]);
 
-      // If filteredUpdates is empty, throw an error
-      if (Object.keys(filteredUpdates).length === 0) {
-          throw new ApiError(400, "No valid fields to update. Allowed fields: name, description, avatar, coverImage, tags, socialLinks, privacy");
+    // Filter the updates to keep only allowed fields
+    const filteredUpdates = Object.keys(updates).reduce((acc, key) => {
+      if (allowedUpdates.has(key)) {
+        acc[key] = updates[key];
       }
+      return acc;
+    }, {});
 
-      // Find the channel by ID and check if it exists
-      const channel = await Channel.findById(channelId);
-      if (!channel) {
-          throw new ApiError(404, "Channel not found");
-      }
-
-      // Check if the request's user is the channel owner
-      if (channel.owner.toString() !== req.user._id.toString()) {
-          throw new ApiError(403, "You do not have permission to update this channel");
-      }
-
-      // Update the channel using findByIdAndUpdate
-      const updatedChannel = await Channel.findByIdAndUpdate(
-          channelId,
-          { $set: filteredUpdates },
-          { new: true } // Return the updated document
+    // If filteredUpdates is empty, throw an error
+    if (Object.keys(filteredUpdates).length === 0) {
+      throw new ApiError(
+        400,
+        "No valid fields to update. Allowed fields: name, description, avatar, coverImage, tags, socialLinks, privacy"
       );
+    }
 
-      return res
-          .status(200)
-          .json(new ApiResponse(200, updatedChannel, "Channel updated successfully"));
+    // Find the channel by ID and check if it exists
+    const channel = await Channel.findById(channelId);
+    if (!channel) {
+      throw new ApiError(404, "Channel not found");
+    }
+
+    // Check if the request's user is the channel owner
+    if (channel.owner.toString() !== req.user._id.toString()) {
+      throw new ApiError(
+        403,
+        "You do not have permission to update this channel"
+      );
+    }
+
+    // Update the channel using findByIdAndUpdate
+    const updatedChannel = await Channel.findByIdAndUpdate(
+      channelId,
+      { $set: filteredUpdates },
+      { new: true } // Return the updated document
+    );
+
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(200, updatedChannel, "Channel updated successfully")
+      );
   } catch (error) {
-      throw new ApiError(500, "An error occurred while updating the channel.");
+    throw new ApiError(500, "An error occurred while updating the channel.");
   }
 });
 
-
-// 4. Delete a Channel
+// 5. Delete a Channel
 const deleteChannel = asynHandler(async (req, res) => {
   const { channelId } = req.params;
   try {
@@ -229,7 +216,6 @@ const deleteChannel = asynHandler(async (req, res) => {
 
     console.log(channel.owner.toString());
     console.log(req.user._id.toString());
-    
 
     // Check if the channel exists
     if (!channel) {
@@ -246,7 +232,7 @@ const deleteChannel = asynHandler(async (req, res) => {
 
     // Delete the channel
     await Channel.findByIdAndDelete(channel._id);
-  
+
     return res
       .status(200)
       .json(new ApiResponse(201, {}, "Channel deleted successfully"));
@@ -255,7 +241,7 @@ const deleteChannel = asynHandler(async (req, res) => {
   }
 });
 
-// 5. Get Channel Stats (views, subscribers, etc.)
+// 6. Get Channel Stats (views, subscribers, etc.)
 const getChannelStats = asynHandler(async (req, res) => {
   const { channelId } = req.params;
 
@@ -304,8 +290,6 @@ const getChannelStats = asynHandler(async (req, res) => {
     );
   }
 });
-
-
 
 export {
   createChannel,

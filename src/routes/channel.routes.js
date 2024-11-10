@@ -20,14 +20,14 @@ router.route("/").post(
     upload.fields([
         { name: "avatar", maxCount: 1 },
         { name: "coverImage", maxCount: 1 },
-      ]), createChannel);
-
-router.route("/:channelId")
-    .get(getChannelById)
-    .put(updateChannel)
-    .delete(deleteChannel);
-
-router.route("/stats/:channelId").get(getChannelStats);
+    ]), createChannel);
 router.route("/search").get(searchChannels);
+      
+router.route("/:channelId")
+      .get(getChannelById)
+      .put(updateChannel)
+      .delete(deleteChannel);
+      
+      router.route("/stats/:channelId").get(getChannelStats);
 
 export default router;
