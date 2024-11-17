@@ -42,7 +42,6 @@ const createPlaylist = asynHandler(async (req, res) => {
         console.error("Error creating playlist:", error);
         res.status(500).json({ message: "Server error. Please try again." });
     }
-
 })
 
 const getUserPlaylists = asynHandler(async (req, res) => {

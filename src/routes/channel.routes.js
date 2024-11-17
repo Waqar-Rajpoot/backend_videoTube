@@ -6,7 +6,7 @@ import {
     updateChannel,
     deleteChannel,
     getChannelStats,
-    searchChannels
+    searchChannels,
 } from "../controllers/channel.controller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
@@ -27,7 +27,7 @@ router.route("/:channelId")
       .get(getChannelById)
       .put(updateChannel)
       .delete(deleteChannel);
-      
-      router.route("/stats/:channelId").get(getChannelStats);
+    
+router.route("/stats/:channelId").get(getChannelStats);
 
 export default router;

@@ -80,7 +80,6 @@ const toggleTweetLike = asynHandler(async (req, res) => {
 
 
 const getLikedVideos = asynHandler(async (req, res) => {
-    //TODO: get all liked videos
 
     const likedBy = req.user.id; // Assuming you have user authentication in place
 

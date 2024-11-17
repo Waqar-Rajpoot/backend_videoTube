@@ -217,18 +217,16 @@ const refreshAccessToken = asynHandler(async (req, res) => {
 const changeCurrentPassword = asynHandler(async (req, res) => {
   const { oldPassword, newPassword, confPassword } = req.body;
 
-  if (!oldPassword ||!newPassword ||!confPassword) {
+  if (!oldPassword || !newPassword || !confPassword) {
     throw new ApiError(400, "All fields are required");
   }
 
   if (newPassword !== confPassword) {
     throw new ApiError(400, "Both Passwords are not same");
   }
-  
+
   const user = await User.findById(req.user?._id);
   const isPasswordCorrects = await user.isPasswordCorrect(oldPassword);
-
-  
 
   if (!isPasswordCorrects) {
     throw new ApiError(400, "Invalid old password");
@@ -450,7 +448,6 @@ const getWatchHistory = asynHandler(async (req, res) => {
       )
     );
 });
-
 
 export {
   registerUser,

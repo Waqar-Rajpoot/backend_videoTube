@@ -22,3 +22,4 @@ export const upload = multer({
 //  }).single('video');  // Form field name in HTML form  // assignment for explore it  // 'video' is the name of the file input field in the HTML form  // 'video' is the name of the field in the req.file object  // 'video' is the name of the uploaded file in the filesystem  // 'video' is the name of the uploaded file in the req.body object  // 'video' is the name of the uploaded file in the req.params object  // 'video' is the name of the uploaded file in the req.query object  // 'video' is the name of the uploaded file in the req.file object  // 'video' is the name of the uploaded file in the req.files array  // 'video' is the name of the
 
 })
+ 

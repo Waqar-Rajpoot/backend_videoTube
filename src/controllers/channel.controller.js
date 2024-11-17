@@ -244,11 +244,18 @@ const deleteChannel = asynHandler(async (req, res) => {
 // 6. Get Channel Stats (views, subscribers, etc.)
 const getChannelStats = asynHandler(async (req, res) => {
   const { channelId } = req.params;
+  console.log("Channel id: ", channelId);
+
+  if (!channelId) {
+    throw new ApiError(404, "oh!😒 please input channel ID");
+  }
+  
 
   try {
     // Find the channel by ID
     const channel = await Channel.findById(channelId);
-
+    console.log(channel);
+    
     // Check if the channel exists
     if (!channel) {
       throw new ApiError(404, "Channel not found");
