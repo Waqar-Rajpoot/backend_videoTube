@@ -4,71 +4,30 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asynHandler } from "../utils/asynHandler.js";
 
-const getVideoComments = asynHandler(async (req, res) => {
-  const { videoId } = req.params; // Get the videoId from request parameters
-  const { page = 1, limit = 10 } = req.query; // Get pagination parameters from query
-
+const getVideoComments = async (req, res) => {
   try {
-    // Build the aggregation pipeline to fetch comments for the video with pagination
-    const options = {
-      page: parseInt(page, 10), // Convert page to integer
-      limit: parseInt(limit, 10), // Convert limit to integer
-    };
+    const { videoId } = req.params;  // Assuming the video ID is passed as a route parameter
 
-    const comments = await Comment.aggregatePaginate(
-      Comment.aggregate([
-        { $match: { video: videoId } }, // Match comments for the specific video
-        { $sort: { createdAt: -1 } }, // Sort comments by creation date (newest first)
-        {
-          $lookup: {
-            from: "users", // Name of the user collection
-            localField: "owner",
-            foreignField: "_id",
-            as: "ownerDetails",
-          },
-        },
-        {
-          $unwind: {
-            path: "$ownerDetails",
-            preserveNullAndEmptyArrays: true, // If there's no owner, keep the comment
-          },
-        },
-        {
-          $project: {
-            content: 1,
-            createdAt: 1,
-            "ownerDetails.name": 1,
-            "ownerDetails._id": 1,
-          },
-        },
-      ]),
-      options
-    );
+    // Fetch comments for the specific video
+    const comments = await Comment.find({ video: videoId })
+                                  .populate("owner", "fullName email")  // Populating owner to get user info (optional)
+                                  .sort({ createdAt: -1 });  // Sorting comments by creation date, descending order
 
-    // If no comments found, respond with a message
-    if (!comments.docs.length) {
-      return res
-        .status(404)
-        .json({ message: "No comments found for this video." });
+    // Check if comments exist
+    if (!comments) {
+      return res.status(404).json({ message: "No comments found for this video." });
     }
 
-    // Respond with the paginated comments
-    res.status(200).json({
-      comments: comments.docs,
-      totalPages: comments.totalPages,
-      currentPage: comments.page,
-    });
+    // Return the comments
+    return res.status(200).json({ comments });
   } catch (error) {
-    res.status(500).json({ message: "Failed to retrieve comments.", error });
+    console.error(error);
+    return res.status(500).json({ message: "Server error while fetching comments." });
   }
-});
-
+};
 const addComment = asynHandler(async (req, res) => {
   const { content, videoId } = req.body; // Get content and videoId from request body
   const owner = req.user.id; // Assuming user is authenticated
-
-  console.log(content, videoId);
-  
 
   // Validate input
   if (!content || !videoId) {
@@ -155,7 +114,7 @@ const deleteComment = asynHandler(async (req, res) => {
     }
 
     // Delete the comment
-    await comment.remove();
+    await comment.deleteOne();
 
     // Respond with a success message
     res.status(200).json({ message: "Comment deleted successfully!" });

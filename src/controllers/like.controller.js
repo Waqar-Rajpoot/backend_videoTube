@@ -14,8 +14,8 @@ const toggleVideoLike = asynHandler(async (req, res) => {
         const existingLike = await Like.findOne({ likedBy, video: videoId });
 
         if (existingLike) {
-            // If it exists, remove the like (unlike the video)
-            await existingLike.remove();
+            // If it exists, delete the like (unlike the video)
+            await existingLike.deleteOne();
             return res.status(200).json({ message: "Unliked the video successfully!" });
         } else {
             // If it doesn't exist, create a new like for the video
@@ -40,7 +40,7 @@ const toggleCommentLike = asynHandler(async (req, res) => {
 
         if (existingLike) {
             // If it exists, remove the like (unlike the comment)
-            await existingLike.remove();
+            await existingLike.deleteOne();
             return res.status(200).json({ message: "Unliked the comment successfully!" });
         } else {
             // If it doesn't exist, create a new like for the comment
@@ -64,7 +64,7 @@ const toggleTweetLike = asynHandler(async (req, res) => {
 
         if (existingLike) {
             // If it exists, remove the like (unlike the tweet)
-            await existingLike.remove();
+            await existingLike.deleteOne();
             return res.status(200).json({ message: "Unliked the tweet successfully!" });
         } else {
             // If it doesn't exist, create a new like for the tweet
@@ -86,8 +86,8 @@ const getLikedVideos = asynHandler(async (req, res) => {
     try {
         // Find all likes for videos by the authenticated user
         const likedVideos = await Like.find({ likedBy, video: { $ne: null } }) // Ensure we're only fetching video likes
-            .populate("video", "title description url") // Adjust fields as necessary
-            .populate("likedBy", "name email"); // Optionally populate likedBy to get user details
+            .populate("video", "title description videoFile") // Adjust fields as necessary
+            // .populate("likedBy", "fullName email"); // Optionally populate likedBy to get user details
 
         if (!likedVideos.length) {
             return res.status(404).json({ message: "No liked videos found for this user." });
