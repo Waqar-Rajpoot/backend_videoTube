@@ -8,18 +8,17 @@ import { User } from "../models/user.model.js"
 
 
 const createPlaylist = asynHandler(async (req, res) => {
-    // const {name, description} = req.body
 
     try {
-        const { name, description, videos } = req.body;
+        const { name, description, videosId } = req.body;
         
         // Assuming `req.user._id` holds the authenticated user's ID
         const owner = req.user._id;
 
         // Validate videos exist if provided
-        if (videos && videos.length > 0) {
-            const foundVideos = await Video.find({ _id: { $in: videos } });
-            if (foundVideos.length !== videos.length) {
+        if (videosId && videosId.length > 0) {
+            const foundVideos = await Video.find({ _id: { $in: videosId } });
+            if (foundVideos.length !== videosId.length) {
                 return res.status(400).json({ message: "Some videos were not found." });
             }
         }
@@ -28,10 +27,10 @@ const createPlaylist = asynHandler(async (req, res) => {
         const playlist = new Playlist({
             name,
             description,
-            videos,
+            videos: videosId,
             owner
         });
-
+        
         await playlist.save();
 
         res.status(201).json({
@@ -133,7 +132,7 @@ const addVideoToPlaylist = asynHandler(async (req, res) => {
 })
 
 const removeVideoFromPlaylist = asynHandler(async (req, res) => {
-    const {playlistId, videoId} = req.params
+    // const {playlistId, videoId} = req.params
 
     try {
         const { playlistId, videoId } = req.params;
@@ -178,7 +177,8 @@ const deletePlaylist = asynHandler(async (req, res) => {
         }
 
         // Delete the playlist
-        await playlist.remove();
+        // await playlist.remove();
+        await playlist.deleteOne();
 
         res.status(200).json({
             message: "Playlist deleted successfully",
@@ -195,7 +195,6 @@ const deletePlaylist = asynHandler(async (req, res) => {
 const updatePlaylist = asynHandler(async (req, res) => {
     const {playlistId} = req.params
     const {name, description} = req.body
-    //TODO: update playlist
 
     try {
         // Check if the playlist exists
