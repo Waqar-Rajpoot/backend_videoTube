@@ -17,7 +17,6 @@
   "author": "Waqar Rajpoot",
   "license": "ISC",
   "devDependencies": {
-    "chalk": "^5.3.0",
     "nodemon": "^3.1.7",
     "prettier": "^3.3.3"
   },

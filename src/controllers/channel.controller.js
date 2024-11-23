@@ -7,7 +7,6 @@ import { uploadOnCloudinary } from "../utils/cloudinary.uploadFile.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asynHandler } from "../utils/asynHandler.js";
-import chalk from "chalk";
 
 // 1. Create a New Channel
 const createChannel = asynHandler(async (req, res) => {
